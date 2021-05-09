@@ -1,11 +1,33 @@
+import sys
+sys.path.append("..")
+
+import app.db_cursor
+
 from flask import Blueprint
+from flask_json import as_json
+
 
 controllers_bp = Blueprint('controllers_bp', __name__)
 
 @controllers_bp.route('/shows', methods = ["GET"])
+@as_json
 def shows():
     ''' Returns details about all the shows available '''
-    return "Hello 2!"
+    _shows = db_cursor.show.find()
+
+    item = {}
+    data = []
+    for show in _shows:
+        item = {
+            'id': str(show['_id']),
+            'show': show['show']
+        }
+        data.append(item)
+
+    return {
+        status: True,
+        data: data
+    }
 
 @controllers_bp.route('/show/<string:show>', methods = ["GET"])
 def show(show):
