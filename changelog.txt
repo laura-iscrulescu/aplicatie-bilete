@@ -2,6 +2,8 @@
 09.05.2021: Laura Iscrulescu added docker-compose for Mongodb
 09.05.2021: Bogdan Stan and Bogdan Stancu added portainer, prometheus and grafana
 09.05.2021: Daniel Safta added flask service in dockerfile
+09.05.2021: Laura Iscrulescu added scaffold for Travis CI
+09.05.2021: Bogdan Stancu fixed some bugs from wsgi
 
 
 
