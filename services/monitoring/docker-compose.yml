@@ -1,0 +1,52 @@
+services:
+
+    mongo-prometheus:
+      image: bitnami/mongodb-exporter:0.11.0-debian-10-r75    
+      ports:
+        - 8880:9216
+      environment: 
+        - MONGODB_URI=mongodb://admin:admin123@mongo:27017
+  
+    mongo:
+      image: mongo:4.2.8-bionic
+      restart: always
+      ports: 
+        - 27017:27017
+      environment:
+        - MONGO_INITDB_ROOT_USERNAME=admin
+        - MONGO_INITDB_ROOT_PASSWORD=admin123
+        - MONGO_INITDB_DATABASE=sample
+  
+    mongo-express:
+      image: mongo-express:0.54.0
+      restart: always
+      ports:
+        - 8082:8081
+      environment:
+        - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
+        - ME_CONFIG_MONGODB_ADMINPASSWORD=admin123
+  
+    prometheus:
+      image: flaviostutz/prometheus
+      ports:
+        - 9090:9090
+      environment:
+        - SCRAPE_INTERVAL=10s
+        - SCRAPE_TIMEOUT=10s
+        - STATIC_SCRAPE_TARGETS=mongo@mongo-prometheus:9216
+      volumes:
+        - prometheus_data:/prometheus
+  
+    grafana:
+      image: grafana/grafana:5.2.4
+      ports:
+        - 3000:3000
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=mypass
+      volumes:
+        - grafana_data:/var/lib/grafana
+      restart: always
+
+volumes:
+    grafana_data:
+    prometheus_data:
