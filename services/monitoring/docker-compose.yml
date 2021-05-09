@@ -1,5 +1,15 @@
 services:
 
+    # Portainer
+    portainerservice:
+      image: portainer/portainer
+      volumes:
+        - portainer_data:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+      ports:
+        - "9000:9000"
+
+    # Mongo exporter
     mongo-prometheus:
       image: bitnami/mongodb-exporter:0.11.0-debian-10-r75    
       ports:
@@ -7,6 +17,7 @@ services:
       environment: 
         - MONGODB_URI=mongodb://admin:admin123@mongo:27017
   
+    # Mongo db to be changed
     mongo:
       image: mongo:4.2.8-bionic
       restart: always
@@ -17,6 +28,7 @@ services:
         - MONGO_INITDB_ROOT_PASSWORD=admin123
         - MONGO_INITDB_DATABASE=sample
   
+    # Mongo express to be changed
     mongo-express:
       image: mongo-express:0.54.0
       restart: always
@@ -26,6 +38,7 @@ services:
         - ME_CONFIG_MONGODB_ADMINUSERNAME=admin
         - ME_CONFIG_MONGODB_ADMINPASSWORD=admin123
   
+    # Prometheus
     prometheus:
       image: flaviostutz/prometheus
       ports:
@@ -37,6 +50,7 @@ services:
       volumes:
         - prometheus_data:/prometheus
   
+    # Grafana for monitoring
     grafana:
       image: grafana/grafana:5.2.4
       ports:
@@ -50,3 +64,4 @@ services:
 volumes:
     grafana_data:
     prometheus_data:
+    portainer_data:
