@@ -1,10 +1,12 @@
 from flask import Blueprint
 from flask_json import as_json
+from login_sdk import logged_in
 
 controllers_bp = Blueprint('controllers_bp', __name__)
 
+
 from app import db_cursor
-@controllers_bp.route('/shows', methods = ["GET"])
+@controllers_bp.route('/shows', methods=["GET"])
 @as_json
 def shows():
     ''' Returns details about all the shows available '''
@@ -24,17 +26,20 @@ def shows():
         'data': data
     }
 
-@controllers_bp.route('/show/<string:show>', methods = ["GET"])
+
+@controllers_bp.route('/show/<string:show>', methods=["GET"])
 def show(show):
     ''' Returns details about the show provided in the request '''
     return "Hello 2!"
 
-@controllers_bp.route('/seats/<show>/<int:day>', methods = ["GET"])
+
+@controllers_bp.route('/seats/<show>/<int:day>', methods=["GET"])
 def seats(show, day):
     ''' Return details about the seats for that show '''
     return "Hello 1!"
 
-@controllers_bp.route('/book', methods = ["POST"])
+
+@controllers_bp.route('/book', methods=["POST"])
 def book():
     ''' 
         Book a seat at a show
@@ -44,7 +49,8 @@ def book():
     '''
     return "Hello 3!"
 
-@controllers_bp.route('/cancel', methods = ["POST"])
+
+@controllers_bp.route('/cancel', methods=["POST"])
 def cancel():
     ''' 
         Book a seat at a show

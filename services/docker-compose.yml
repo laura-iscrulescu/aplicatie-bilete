@@ -14,6 +14,7 @@ services:
       volumes:
         - mongodbdata:/data/db
       networks:
+        - login-ms
         - backend
 
     flask:
@@ -21,6 +22,7 @@ services:
         context: app
         dockerfile: Dockerfile
       container_name: app-backend
+      hostname: app-backend
       image: digitalocean.com/flask-python:3.6
       restart: unless-stopped
       environment:
@@ -38,6 +40,7 @@ services:
       depends_on:
         - mongodb
       networks:
+        - login-ms
         - backend
 
     flask-login:
@@ -45,7 +48,8 @@ services:
         context: login
         dockerfile: Dockerfile
       container_name: app-login
-      image: digitalocean.com/flask-python:3.6
+      hostname: app-login
+      image: digitalocean.com/flask-python:3.7
       restart: unless-stopped
       environment:
         APP_ENV: "prod"
@@ -56,17 +60,15 @@ services:
         MONGODB_PASSWORD: admin
         MONGODB_HOSTNAME: mongodb
       ports:
-        - "5005:5000"
-      volumes:
-        - appdata:/var/www
+        - "5001:5000"
       depends_on:
         - mongodb
-        - flask
       networks:
-        - backend
-
+        - login-ms
 networks:
   backend:
+    driver: bridge
+  login-ms:
     driver: bridge
 
 volumes:
