@@ -33,8 +33,8 @@ def shows():
         data.append(item)
 
     return {
-        status: True,
-        data: data
+        'status': True,
+        'data': data
     }
 
 @controllers_bp.route('/show/<string:show>', methods = ["GET"])
