@@ -9,10 +9,10 @@ ulimit -n 4096
 
 # setup postgresql database
 # create kong db user & kong database
-apt-get install -y postgresql postgresql-contrib
-su - postgres -c "createuser -s kong"
+sudo apt-get install -y postgresql postgresql-contrib
+sudo su - postgres -c "createuser -s kong"
 sudo -u postgres psql -c "ALTER USER kong WITH PASSWORD 'kong';"
-su - postgres -c "createdb kong"
+sudo su - postgres -c "createdb kong"
 
 # install the Kong api gateway
 echo "deb https://kong.bintray.com/kong-deb `lsb_release -sc` main" | sudo tee -a /etc/apt/sources.list
@@ -23,7 +23,7 @@ apt-get install -y kong
 
 # bootstrap & start Kong
 cd /etc/kong &&
-cp /tmp/kong.conf /etc/kong/kong.conf
+sudo cp /etc/kong/kong.conf.default /etc/kong/kong.conf
 kong migrations bootstrap [-c kong.conf]
 kong start [-c kong.conf]
 
