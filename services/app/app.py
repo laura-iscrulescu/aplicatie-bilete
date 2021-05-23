@@ -12,8 +12,6 @@ app.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + 
 mongo = PyMongo(app)
 db_cursor = mongo.db
 
-
-
 from app_blueprint import controllers_bp
 app.register_blueprint(controllers_bp, url_prefix='/api')
 

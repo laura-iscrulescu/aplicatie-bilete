@@ -1,6 +1,5 @@
 import os
-import secrets
-import pymongo
+import random
 
 from flask import Flask
 from flask.globals import request
@@ -31,13 +30,13 @@ def login():
     data = request.form
     username = data.get('user')
     password = data.get('password')
-    hash = secrets.token_hex(nbytes=16)
+    hash = random.randint(0,100)
     newvalues = { "$set": { "hash": hash } }
     
     user = users.find_one({'user': username, 'pass': password})
     if user:
         users.update_one({'user': username, 'pass': password}, newvalues)
-        return hash
+        return str(hash)
     return 'User not found',403
 
 
@@ -48,7 +47,7 @@ def authorize():
     _users = users.find()
     for user in _users:
         print(user)
-        if user['hash'] == jwt:
+        if str(user['hash']) == str(jwt):
             return 'Authorized'
     return  'User not found', 403
 
@@ -65,4 +64,4 @@ def logout():
 
 
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0")
+    app.run(debug=True, host="0.0.0.0", port=5001)
