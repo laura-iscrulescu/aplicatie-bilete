@@ -23,7 +23,7 @@ services:
         dockerfile: Dockerfile
       container_name: app-backend
       hostname: app-backend
-      image: digitalocean.com/flask-python:3.6
+      image: digitalocean.com/flask-python:3.7
       restart: unless-stopped
       environment:
         APP_ENV: "prod"
@@ -65,6 +65,58 @@ services:
         - mongodb
       networks:
         - login-ms
+
+    mongo-express:
+      image: mongo-express:latest
+      container_name: mongo-express
+      environment:
+        ME_CONFIG_MONGODB_ADMINUSERNAME: admin
+        ME_CONFIG_MONGODB_ADMINPASSWORD: admin
+        ME_CONFIG_MONGODB_SERVER: mongodb
+        ME_CONFIG_MONGODB_PORT: "27017"
+      ports:
+        - "8081:8081"
+      networks:
+        - backend
+      depends_on:
+        - mongodb
+
+    portainerservice:
+      image: portainer/portainer
+      volumes:
+        - portainer_data:/data
+        - /var/run/docker.sock:/var/run/docker.sock
+      ports:
+        - "9000:9000"
+
+    mongo-prometheus:
+      image: bitnami/mongodb-exporter:0.11.0-debian-10-r75
+      ports:
+        - 8880:9216
+      environment: 
+        - MONGODB_URI=mongodb://admin:admin@mongo:27017
+
+    prometheus:
+      image: flaviostutz/prometheus
+      ports:
+        - 9090:9090
+      environment:
+        - SCRAPE_INTERVAL=10s
+        - SCRAPE_TIMEOUT=10s
+        - STATIC_SCRAPE_TARGETS=mongo@mongo-prometheus:9216
+      volumes:
+        - prometheus_data:/prometheus
+
+    grafana:
+      image: grafana/grafana:5.2.4
+      ports:
+        - 3000:3000
+      environment:
+        - GF_SECURITY_ADMIN_PASSWORD=mypass
+      volumes:
+        - grafana_data:/var/lib/grafana
+      restart: always
+
 networks:
   backend:
     driver: bridge
@@ -75,4 +127,7 @@ volumes:
   mongodbdata:
     driver: local
   appdata:
-    driver: local 
+    driver: local
+  grafana_data:
+  prometheus_data:
+  portainer_data:
