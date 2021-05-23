@@ -87,7 +87,9 @@ services:
       ports:
         - 8880:9216
       environment: 
-        - MONGODB_URI=mongodb://admin:admin@mongo:27017
+        - MONGODB_URI=mongodb://admin:admin@mongodb:27017
+      networks:
+        - backend
 
     prometheus:
       image: flaviostutz/prometheus
@@ -99,6 +101,8 @@ services:
         - STATIC_SCRAPE_TARGETS=mongodb@mongo-prometheus:9216
       volumes:
         - prometheus_data:/prometheus
+      networks:
+        - backend
 
     grafana:
       image: grafana/grafana:5.2.4
@@ -110,28 +114,27 @@ services:
         - grafana_data:/var/lib/grafana
       restart: always
 
-
-    # kong:
-    #   image: kong:2.4-alpine
-    #   volumes:
-    #     - ./kong:/usr/local/kong/declarative/
-    #   environment:
-    #     KONG_DATABASE: 'off'
-    #     KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
-    #     KONG_PROXY_ACCESS_LOG: /dev/stdout
-    #     KONG_ADMIN_ACCESS_LOG: /dev/stdout
-    #     KONG_PROXY_ERROR_LOG: /dev/stderr
-    #     KONG_ADMIN_ERROR_LOG: /dev/stderr
-    #     KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
-    #   ports:
-    #     - 8002:8000
-    #     - 8443:8443
-    #   deploy:
-    #     placement:
-    #       constraints: [ node.role == manager ]
-    #   networks:
-    #     - backend
-    #     - login-ms
+    kong:
+      image: kong:2.4-alpine
+      volumes:
+        - ./kong:/usr/local/kong/declarative/
+      environment:
+        KONG_DATABASE: 'off'
+        KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+        KONG_PROXY_ACCESS_LOG: /dev/stdout
+        KONG_ADMIN_ACCESS_LOG: /dev/stdout
+        KONG_PROXY_ERROR_LOG: /dev/stderr
+        KONG_ADMIN_ERROR_LOG: /dev/stderr
+        KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      ports:
+        - 8002:8000
+        - 8443:8443
+      deploy:
+        placement:
+          constraints: [ node.role == manager ]
+      networks:
+        - backend
+        - login-ms
 
 networks:
   backend:
