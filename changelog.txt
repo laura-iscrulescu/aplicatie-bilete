@@ -1,0 +1,7 @@
+22.05.2021: Safta Daniel added login scaffold and microservice 
+22.05.2021: Iscrulescu Laura added prometheus and grafana to docker-compose
+23.05.2021: Iscrulescu Laura added kong to docker-compose
+23.05.2021: Stan Bogdan added portainer config files
+23.05.2021: Stancu Bogdan added kong config files
+23.05.2021: Safta Daniel, Stan Bogdan and Stancu Bogdan finished the main app scaffold and microservice and updated the Readme 
+23.05.2021: Iscrulescu Laura finished configuring TravisCI
