@@ -2,7 +2,7 @@ version: "3"
 services:
     mongodb:
       image: mongo:latest
-      container_name: mongodb
+      # container_name: mongodb
       hostname: mongodb
       environment:
         - MONGO_DATA_DIR=/data/db
@@ -21,10 +21,10 @@ services:
       build:
         context: app
         dockerfile: Dockerfile
-      container_name: app-backend
+      # container_name: app-backend
       hostname: app-backend
-      image: digitalocean.com/flask-python:3.7
-      restart: unless-stopped
+      image: digitalocean.com/flask-python:3.6
+      restart: always
       environment:
         APP_ENV: "prod"
         APP_DEBUG: "False"
@@ -47,10 +47,10 @@ services:
       build:
         context: login
         dockerfile: Dockerfile
-      container_name: app-login
+      # container_name: app-login
       hostname: app-login
       image: digitalocean.com/flask-python:3.7
-      restart: unless-stopped
+      restart: always
       environment:
         APP_ENV: "prod"
         APP_DEBUG: "False"
@@ -68,7 +68,7 @@ services:
 
     mongo-express:
       image: mongo-express:latest
-      container_name: mongo-express
+      # container_name: mongo-express
       environment:
         ME_CONFIG_MONGODB_ADMINUSERNAME: admin
         ME_CONFIG_MONGODB_ADMINPASSWORD: admin
@@ -81,13 +81,6 @@ services:
       depends_on:
         - mongodb
 
-    portainerservice:
-      image: portainer/portainer
-      volumes:
-        - portainer_data:/data
-        - /var/run/docker.sock:/var/run/docker.sock
-      ports:
-        - "9000:9000"
 
     mongo-prometheus:
       image: bitnami/mongodb-exporter:0.11.0-debian-10-r75
@@ -117,11 +110,32 @@ services:
         - grafana_data:/var/lib/grafana
       restart: always
 
+
+    kong:
+      image: kong:2.4-alpine
+      volumes:
+        - ./kong:/usr/local/kong/declarative/
+      environment:
+        KONG_DATABASE: 'off'
+        # KONG_DECLARATIVE_CONFIG: /usr/local/kong/declarative/kong.yml
+        KONG_PROXY_ACCESS_LOG: /dev/stdout
+        KONG_ADMIN_ACCESS_LOG: /dev/stdout
+        KONG_PROXY_ERROR_LOG: /dev/stderr
+        KONG_ADMIN_ERROR_LOG: /dev/stderr
+        KONG_ADMIN_LISTEN: 0.0.0.0:8001, 0.0.0.0:8444 ssl
+      ports:
+        - 8002:8000
+        - 8443:8443
+      deploy:
+        placement:
+          constraints: [ node.role == manager ]
+      networks:
+        - backend
+        - login-ms
+
 networks:
   backend:
-    driver: bridge
   login-ms:
-    driver: bridge
 
 volumes:
   mongodbdata:
@@ -129,5 +143,6 @@ volumes:
   appdata:
     driver: local
   grafana_data:
+    driver: local
   prometheus_data:
-  portainer_data:
+    driver: local
