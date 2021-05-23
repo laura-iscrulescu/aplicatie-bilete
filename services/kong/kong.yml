@@ -1,0 +1,23 @@
+_format_version: "2.1"
+
+services:
+  - name: app-login
+    url: http://app-login:5001
+    routes:
+      - name: app-login-route
+        paths:
+          - /login
+
+  - name: app-backend
+    url: http://app-backend:5000
+    routes:
+      - name: app-backend-route
+        paths:
+          - /app
+
+  - name: mongo-express
+    url: http://mongo-express:8081
+    routes:
+      - name: mongo-express-service
+        paths:
+          - /mongo-express

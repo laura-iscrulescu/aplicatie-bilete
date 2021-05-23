@@ -1,6 +1,5 @@
 import os
-import secrets
-import pymongo
+import random
 
 from flask import Flask
 from flask.globals import request
@@ -8,10 +7,12 @@ from flask_pymongo import PyMongo
 
 
 app = Flask(__name__)
-db_uri = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' +  os.environ['MONGODB_DATABASE']
-app.config["MONGO_URI"] = db_uri
+
+app.config["MONGO_URI"] = 'mongodb://' + os.environ['MONGODB_USERNAME'] + ':' + os.environ['MONGODB_PASSWORD'] + '@' + os.environ['MONGODB_HOSTNAME'] + ':27017/' + os.environ['MONGODB_DATABASE']
+
 mongo = PyMongo(app)
-users = mongo.db.users
+db = mongo.db
+users = db['users']
 
 @app.route('/create', methods=["POST"])
 def create():
@@ -21,31 +22,22 @@ def create():
 
     users.insert_one({'user': username, 'pass': password, 'hash': ""})
 
-    return {
-        'status': 200,
-        'respo': "User created"
-    }
+    return  "User created"
 
 
 @app.route('/login', methods=["POST"])
 def login():
-    ''' Returns details about the show provided in the request '''
     data = request.form
     username = data.get('user')
     password = data.get('password')
-    hash = secrets.token_hex(nbytes=16)
+    hash = random.randint(0,100)
     newvalues = { "$set": { "hash": hash } }
     
     user = users.find_one({'user': username, 'pass': password})
     if user:
         users.update_one({'user': username, 'pass': password}, newvalues)
-        return {
-            'status': 200,
-            'token': hash
-        }
-    return {
-        'status': 403,
-    }
+        return str(hash)
+    return 'User not found',403
 
 
 @app.route('/authorize', methods=["POST"])
@@ -54,28 +46,21 @@ def authorize():
     jwt = data.get('token')
     _users = users.find()
     for user in _users:
-        if user.get(hash) == jwt:
-            return {
-            'status': 200,
-        }
-    return {
-        'status': 403,
-        'resp': 'User not found'
-    }
+        print(user)
+        if str(user['hash']) == str(jwt):
+            return 'Authorized'
+    return  'User not found', 403
 
 
 @app.route('/logout', methods=["POST"])
 def logout():
-    ''' Returns details about the show provided in the request '''
     data = request.form
     username = data.get('user')
     password = data.get('password')
     newvalues = { "$set": { "hash": "" } }
     users.update_one({'user': username, 'pass': password}, newvalues)
-    return {
-        'status': 200,
-        'resp': "User logged out"
-    }
+    return "User logged out"
+
 
 
 if __name__ == "__main__":
