@@ -1,17 +1,17 @@
 _format_version: "2.1"
 
 services:
-  - name: flask-login
-    url: http://flask-login:5001
+  - name: app-login
+    url: http://app-login:5001
     routes:
-      - name: flask-login-route
+      - name: app-login-route
         paths:
           - /login
 
-  - name: flask
-    url: http://flask:5000
+  - name: app-backend
+    url: http://app-backend:5000
     routes:
-      - name: flask-route
+      - name: app-backend-route
         paths:
           - /app
 
